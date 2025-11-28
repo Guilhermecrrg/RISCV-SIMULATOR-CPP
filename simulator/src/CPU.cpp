@@ -1,4 +1,1 @@
-class CPU {
 
-    private register 
-}

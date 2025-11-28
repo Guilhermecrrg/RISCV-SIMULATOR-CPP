@@ -1,6 +1,19 @@
 #include <iostream>
+#include "include\Register32.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    Register32 rf;
+
+    rf.write(1, 10);
+    rf.write(2, 0xDEADBEEF);
+    rf.write(0, 123);  
+
+    std::cout << "x1 = " << rf.read(1) << std::endl;
+    std::cout << "x2 = 0x" << std::hex << rf.read(2) << std::endl;
+    std::cout << "x0 = " << rf.read(0) << std::endl;  
+
+    std::cout << "\nDump dos registradores:\n";
+    rf.dump();
+
     return 0;
 }
