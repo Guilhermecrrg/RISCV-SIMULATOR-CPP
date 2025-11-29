@@ -1,24 +1,27 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "build-riscv-sim",
-            "type": "shell",
-            "command": "C:/msys64/ucrt64/bin/g++.exe",
-            "args": [
-                "-g",
-                "simulator/*.cpp",
-                "simulator/src/*.cpp",
-                "-I", "simulator/include",
-                "-o", "simulator/simulator.exe"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$gcc"
-            ]
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "g++",
+      "args": [
+        "-Wall", "-Wextra", "-Wpedantic", "-Wshadow", "-Wformat=2",
+        "-Wcast-align", "-Wconversion", "-Wsign-conversion",
+        "-Wnull-dereference", "-g3", "-O0",
+
+        // compilar todos os .cpp
+        "${workspaceFolder}/simulator/main.cpp",
+        "${workspaceFolder}/simulator/src/CPU.cpp",
+        "${workspaceFolder}/simulator/src/Register.cpp",
+
+        "-o",
+        "${workspaceFolder}/simulator/build/Debug/outDebug.exe"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
 }

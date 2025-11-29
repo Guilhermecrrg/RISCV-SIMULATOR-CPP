@@ -1,8 +1,8 @@
 #include <iostream>
-#include "include\Register32.h"
+#include "include\Register.hpp"
 
 int main() {
-    Register32 rf;
+    Register rf;
 
     rf.write(1, 10);
     rf.write(2, 0xDEADBEEF);
@@ -15,5 +15,6 @@ int main() {
     std::cout << "\nDump dos registradores:\n";
     rf.dump();
 
+    std::cin.get();
     return 0;
 }
