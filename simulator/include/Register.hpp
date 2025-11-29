@@ -1,5 +1,5 @@
-#ifndef REGISTER_H
-#define REGISTER_H
+#ifndef REGISTER_HPP
+#define REGISTER_HPP
 
 #include <array>
 #include <cstdint>

@@ -20,6 +20,6 @@ uint32_t Register::read(std::size_t index) const {
 
 void Register::dump() const {
     for (std::size_t i = 0; i < regs.size(); ++i) {
-        std::cout << "x" << i << " = 0x" << std::hex << regs[i] << std::dec << "\n";
+        std::cout << "x" << i << " =" << std::dec << regs[i] << std::dec << "\n";
     }
 }
