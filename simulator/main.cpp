@@ -1,6 +1,9 @@
 #include "include/CPU.hpp"
+#include "include/Decoder.hpp"
 
 int main() {
+    
+    //Test CPU
     CPU cpu;
 
     cpu.writeReg(1, 0b0000111111111111);
@@ -10,6 +13,13 @@ int main() {
 
     cpu.dump();
 
+    //Test Decoder
+    Decoder decoder;
+
+    uint32_t instr = 0x00A50533; // ADD x10, x10, x10
+    Instruction decoded = decoder.decode(instr);
+
+    decoded.dump();
 
     std::cin.get();
     return 0;

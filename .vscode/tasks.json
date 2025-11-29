@@ -13,6 +13,7 @@
         // compilar todos os .cpp
         "${workspaceFolder}/simulator/main.cpp",
         "${workspaceFolder}/simulator/src/CPU.cpp",
+        "${workspaceFolder}/simulator/src/Decoder.cpp",
         "${workspaceFolder}/simulator/src/Register.cpp",
 
         "-o",
