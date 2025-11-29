@@ -2,6 +2,7 @@
 #define CPU_HPP
 
 #include "Register.hpp"
+#include "Instruction.hpp"
 
 class CPU {
 private:
@@ -13,9 +14,9 @@ public:
     
     void writeReg(size_t index, uint32_t value);
     uint32_t readReg(size_t index) const;
-
-    
     void dump() const;
+    
+    void executeR(const Instruction& instr);
 };
 
 #endif

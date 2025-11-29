@@ -1,25 +1,22 @@
 #include "include/CPU.hpp"
 #include "include/Decoder.hpp"
+#include "include/Instruction.hpp"
 
 int main() {
     
-    //Test CPU
     CPU cpu;
+    Decoder dec;
 
-    cpu.writeReg(1, 0b0000111111111111);
-    cpu.writeReg(2, 0b0101010101010101);
-    cpu.writeReg(3, 0b0000000000000001);
-    cpu.writeReg(0, 0b0101010101001010); 
+    cpu.writeReg(1, 10);
+    cpu.writeReg(2, 20);
+
+    // Instrução ADD x3 = x1 + x2
+    uint32_t instrWord = 0b0000000'00010'00001'000'00011'0110011;
+    Instruction I = dec.decode(instrWord);
+
+    cpu.executeR(I);
 
     cpu.dump();
-
-    //Test Decoder
-    Decoder decoder;
-
-    uint32_t instr = 0x00A50533; // ADD x10, x10, x10
-    Instruction decoded = decoder.decode(instr);
-
-    decoded.dump();
 
     std::cin.get();
     return 0;

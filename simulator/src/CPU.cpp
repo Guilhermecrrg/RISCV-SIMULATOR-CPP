@@ -1,4 +1,5 @@
 #include "../include/CPU.hpp"
+#include "../include/Executor.hpp"
 
 CPU::CPU() {
     
@@ -14,4 +15,8 @@ uint32_t CPU::readReg(size_t index) const {
 
 void CPU::dump() const {
     regs.dump();
+}
+
+void CPU::executeR(const Instruction& instr) {
+    Executor::executeRType(instr, *this);
 }
