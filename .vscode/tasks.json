@@ -17,7 +17,8 @@
         "${workspaceFolder}/simulator/src/Register.cpp",
         "${workspaceFolder}/simulator/src/Executor.cpp",
         "${workspaceFolder}/simulator/src/ALU.cpp",
-
+        "${workspaceFolder}/simulator/src/Memory.cpp",
+        
         "-o",
         "${workspaceFolder}/simulator/build/Debug/outDebug.exe"
       ],

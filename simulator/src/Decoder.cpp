@@ -1,30 +1,53 @@
 #include "../include/Decoder.hpp"
 
-Instruction Decoder::decodeR(uint32_t instr) {
+Instruction Decoder::decodeR(uint32_t instrWord) {
     Instruction i;
 
-    i.opcode = instr & 0x7F;               // bits 0-6
-    i.rd     = (instr >> 7)  & 0x1F;       // bits 7-11
-    i.funct3 = (instr >> 12) & 0x07;       // bits 12-14
-    i.rs1    = (instr >> 15) & 0x1F;       // bits 15-19
-    i.rs2    = (instr >> 20) & 0x1F;       // bits 20-24
-    i.funct7 = (instr >> 25) & 0x7F;       // bits 25-31
+    i.opcode = instrWord & 0x7F;               // bits 0-6
+    i.rd     = (instrWord >> 7)  & 0x1F;       // bits 7-11
+    i.funct3 = (instrWord >> 12) & 0x07;       // bits 12-14
+    i.rs1    = (instrWord >> 15) & 0x1F;       // bits 15-19
+    i.rs2    = (instrWord >> 20) & 0x1F;       // bits 20-24
+    i.funct7 = (instrWord >> 25) & 0x7F;       // bits 25-31
 
     i.type = InstructionType::R_TYPE;
-
     return i;
 }
 
-Instruction Decoder::decodeI(uint32_t word) {
-    Instruction instr;
+Instruction Decoder::decodeI(uint32_t instrWord) {
+    Instruction i;
 
-    instr.opcode = word & 0x7F;               // bits 0-6
-    instr.rd     = (word >> 7)  & 0x1F;       // bits 7-11
-    instr.funct3 = (word >> 12) & 0x07;       // bits 12-14
-    instr.rs1    = (word >> 15) & 0x1F;       // bits 15-19
-    instr.imm = static_cast<int32_t>(word) >> 20;   // bits 20-31
+    i.opcode = instrWord & 0x7F;               // bits 0-6
+    i.rd     = (instrWord >> 7)  & 0x1F;       // bits 7-11
+    i.funct3 = (instrWord >> 12) & 0x07;       // bits 12-14
+    i.rs1    = (instrWord >> 15) & 0x1F;       // bits 15-19
 
-    instr.type = InstructionType::I_TYPE;
+    i.imm = static_cast<int32_t>(instrWord) >> 20; // bits 20-31
 
-    return instr;
+    i.type = InstructionType::I_TYPE;
+    return i;
+}
+
+Instruction Decoder::decodeS(uint32_t instrWord) {
+    Instruction i;
+
+    i.opcode = instrWord & 0x7F;                 // bits 0-6
+    i.funct3 = (instrWord >> 12) & 0x07;         // bits 12-14
+    i.rs1    = (instrWord >> 15) & 0x1F;         // bits 15-19
+    i.rs2    = (instrWord >> 20) & 0x1F;         // bits 20-24
+
+    uint32_t imm4_0  = (instrWord >> 7)  & 0x1F; // bits 7-11
+    uint32_t imm11_5 = (instrWord >> 25) & 0x7F; // bits 25-31
+    
+    int32_t imm = static_cast<int32_t>((imm11_5 << 5) | imm4_0);
+
+    
+    if (imm & 0x800) {
+        imm |= static_cast<int32_t>(0xFFFFF000);
+    }
+
+    i.imm = imm;
+    i.type = InstructionType::S_TYPE;
+
+    return i;
 }

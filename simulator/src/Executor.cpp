@@ -45,7 +45,7 @@ void Executor::executeRType(const Instruction& instr, CPU& cpu) {
 
 void Executor::executeIType(const Instruction& instr, CPU& cpu) {
     int32_t rs1 = static_cast<int32_t>(cpu.readReg(instr.rs1));
-    int32_t imm = instr.imm;  // já sign-extended pelo decoder
+    int32_t imm = instr.imm;  
 
     uint32_t result = 0;
 
@@ -77,4 +77,31 @@ void Executor::executeIType(const Instruction& instr, CPU& cpu) {
     }
 
     cpu.writeReg(instr.rd, result);
+}
+
+void Executor::executeSType(const Instruction& instr, CPU& cpu) {
+    uint32_t base = cpu.readReg(instr.rs1);  
+    uint32_t value = cpu.readReg(instr.rs2); 
+    int32_t imm = instr.imm;                  
+
+    uint32_t addr = base + static_cast<uint32_t>(imm);               
+
+    switch (instr.funct3) {
+
+        case 0b000:  // SB - Store Byte
+            cpu.storeByte(addr, static_cast<uint8_t>(value & 0xFF));
+            break;
+
+        case 0b001:  // SH - Store Half Word (16 bits)
+            cpu.storeHalf(addr, static_cast<uint16_t>(value & 0xFFFF));
+            break;
+
+        case 0b010:  // SW - Store Word (32 bits)
+            cpu.storeWord(addr, value);
+            break;
+
+        default:
+            std::cout << "[ERRO] funct3 desconhecido no S-Type!\n";
+            return;
+    }
 }

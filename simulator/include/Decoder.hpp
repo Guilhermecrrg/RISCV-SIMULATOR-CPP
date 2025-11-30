@@ -6,9 +6,9 @@
 
 class Decoder {
 public:
-    Instruction decodeR(uint32_t instructionWord);
-    Instruction decodeI(uint32_t word);
-
+    Instruction decodeR(uint32_t instrWord);
+    Instruction decodeI(uint32_t instrWord);
+    Instruction decodeS(uint32_t instrWord);
 };
 
 #endif
