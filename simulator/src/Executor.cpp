@@ -142,7 +142,7 @@ void Executor::executeBType(const Instruction& instr, CPU& cpu) {
             break;
 
         default:
-            std::cout << "[ERRO] funct3 inválido em instrução B-Type.\n";
+            std::cout << "[ERRO] funct3 desconhecido no B-Type.\n";
             return;
     }
 
@@ -171,6 +171,16 @@ void Executor::executeUType(const Instruction& instr, CPU& cpu) {
             std::cout << "[ERRO] Opcode desconhecido no U-Type!\n";
             break;
     }
+}
+
+void Executor::executeJType(const Instruction& instr, CPU& cpu) {
+    uint32_t pc = cpu.getPC();
+    int32_t offset = instr.imm;
+    
+    cpu.writeReg(instr.rd, pc + 4);
+
+    int64_t newPC = static_cast<int64_t>(pc) + static_cast<int64_t>(offset);
+    cpu.setPC(static_cast<uint32_t>(newPC));
 }
 
 

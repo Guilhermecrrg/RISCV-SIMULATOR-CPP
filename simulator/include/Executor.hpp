@@ -12,6 +12,7 @@ public:
     static void executeSType(const Instruction& instr, CPU& cpu);
     static void executeBType(const Instruction& instr, CPU& cpu);
     static void executeUType(const Instruction& instr, CPU& cpu);
+    static void executeJType(const Instruction& instr, CPU& cpu);
 };
 
 #endif

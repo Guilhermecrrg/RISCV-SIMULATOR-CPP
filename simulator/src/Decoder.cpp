@@ -1,4 +1,46 @@
 #include "../include/Decoder.hpp"
+#include <iostream>
+
+Instruction Decoder::decode(uint32_t instrWord) {
+    uint32_t opcode = instrWord & 0x7F;
+
+    switch (opcode) {
+
+        // R-TYPE
+        case 0b0110011:
+            return decodeR(instrWord);
+
+        // I-TYPE
+        case 0b0010011: 
+        case 0b0000011: 
+        case 0b1100111: 
+            return decodeI(instrWord);
+
+        // S-TYPE
+        case 0b0100011:
+            return decodeS(instrWord);
+
+        // B-TYPE
+        case 0b1100011:
+            return decodeB(instrWord);
+
+        // U-TYPE
+        case 0b0110111: 
+        case 0b0010111: 
+            return decodeU(instrWord);
+
+        // J-TYPE
+        case 0b1101111:
+            return decodeJ(instrWord);
+
+        default:
+            std::cout << "[ERRO] Opcode desconhecido: "  << opcode << "\n";
+            Instruction inv{};
+            inv.type = InstructionType::UNKNOWN;
+            return inv;
+    }
+}
+
 
 Instruction Decoder::decodeR(uint32_t instrWord) {
     Instruction i;
@@ -95,3 +137,30 @@ Instruction Decoder::decodeU(uint32_t instrWord) {
     return i;
 }
 
+Instruction Decoder::decodeJ(uint32_t instrWord) {
+    Instruction i;
+
+    i.opcode = instrWord & 0x7F;          // bits 0-6
+    i.rd     = (instrWord >> 7) & 0x1F;   // bits 7-11
+
+    int32_t imm20    = static_cast<int32_t>((instrWord >> 31) & 0x1);   // bit 31
+    int32_t imm10_1  = static_cast<int32_t>((instrWord >> 21) & 0x3FF); // bits 21-30
+    int32_t imm11    = static_cast<int32_t>((instrWord >> 20) & 0x1);   // bit 20
+    int32_t imm19_12 = static_cast<int32_t>((instrWord >> 12) & 0xFF);  // bits 12-19
+
+
+    int32_t imm = (imm20 << 20)
+                | (imm19_12 << 12)
+                | (imm11 << 11)
+                | (imm10_1 << 1);
+
+     
+    if (imm & (1 << 20)) {
+        imm |= static_cast<int32_t>(0xFFE00000);
+    }
+
+    i.imm = imm;
+    i.type = InstructionType::J_TYPE;
+
+    return i;
+}

@@ -5,7 +5,6 @@
 
 class ALU {
 public:
-
     static uint32_t xorOp(uint32_t a, uint32_t b);
     static uint32_t orOp(uint32_t a, uint32_t b);
     static uint32_t andOp(uint32_t a, uint32_t b);
