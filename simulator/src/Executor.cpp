@@ -105,3 +105,52 @@ void Executor::executeSType(const Instruction& instr, CPU& cpu) {
             return;
     }
 }
+
+void Executor::executeBType(const Instruction& instr, CPU& cpu) {
+    uint32_t rs1Val = cpu.readReg(instr.rs1);
+    uint32_t rs2Val = cpu.readReg(instr.rs2);
+
+    int32_t offset = instr.imm;      
+    uint32_t pc    = cpu.getPC();    
+
+    bool takeBranch = false;
+
+    switch (instr.funct3)
+    {
+        case 0b000: // BEQ
+            takeBranch = (rs1Val == rs2Val);
+            break;
+
+        case 0b001: // BNE
+            takeBranch = (rs1Val != rs2Val);
+            break;
+
+        case 0b100: // BLT (signed)
+            takeBranch = (static_cast<int32_t>(rs1Val) < static_cast<int32_t>(rs2Val));
+            break;
+
+        case 0b101: // BGE (signed)
+            takeBranch = (static_cast<int32_t>(rs1Val) >= static_cast<int32_t>(rs2Val));
+            break;
+
+        case 0b110: // BLTU (unsigned)
+            takeBranch = (rs1Val < rs2Val);
+            break;
+
+        case 0b111: // BGEU (unsigned)
+            takeBranch = (rs1Val >= rs2Val);
+            break;
+
+        default:
+            std::cout << "[ERRO] funct3 inválido em instrução B-Type.\n";
+            return;
+    }
+
+    if (takeBranch) {
+        int64_t next = static_cast<int64_t>(pc) + static_cast<int64_t>(offset);
+        cpu.setPC(static_cast<uint32_t>(next));
+    } else {
+        cpu.setPC(pc + 4);
+    }
+}
+

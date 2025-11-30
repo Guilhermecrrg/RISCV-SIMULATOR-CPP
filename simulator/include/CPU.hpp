@@ -25,6 +25,11 @@ public:
     uint16_t loadHalf(uint32_t addr) const;
     uint32_t loadWord(uint32_t addr) const;
 
+    // PC 
+    uint32_t getPC() const { return pc; }
+    void setPC(uint32_t value) { pc = value; }
+    void advancePC() { pc += 4; }
+
     void storeByte(uint32_t addr, uint8_t value);
     void storeHalf(uint32_t addr, uint16_t value);
     void storeWord(uint32_t addr, uint32_t value);

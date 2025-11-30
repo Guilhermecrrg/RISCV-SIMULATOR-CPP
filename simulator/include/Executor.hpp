@@ -10,6 +10,7 @@ public:
     static void executeRType(const Instruction& instr, CPU& cpu);
     static void executeIType(const Instruction& instr, CPU& cpu);
     static void executeSType(const Instruction& instr, CPU& cpu);
+    static void executeBType(const Instruction& instr, CPU& cpu);
 };
 
 #endif

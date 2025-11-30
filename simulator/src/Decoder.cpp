@@ -51,3 +51,33 @@ Instruction Decoder::decodeS(uint32_t instrWord) {
 
     return i;
 }
+
+Instruction Decoder::decodeB(uint32_t instrWord) {
+    Instruction i;
+
+    i.opcode = instrWord & 0x7F;                // bits 0-6
+    i.funct3 = (instrWord >> 12) & 0x07;        // bits 12-14
+    i.rs1    = (instrWord >> 15) & 0x1F;        // bits 15-19
+    i.rs2    = (instrWord >> 20) & 0x1F;        // bits 20-24
+
+    uint32_t imm11   = (instrWord >> 7)  & 0x01;   // bit 7
+    uint32_t imm4_1  = (instrWord >> 8)  & 0x0F;   // bits 8-11
+    uint32_t imm10_5 = (instrWord >> 25) & 0x3F;   // bits 25-30
+    uint32_t imm12   = (instrWord >> 31) & 0x01;   // bit 31
+
+    int32_t imm = static_cast<int32_t>(
+          (imm12   << 12)
+        | (imm11   << 11)
+        | (imm10_5 << 5)
+        | (imm4_1  << 1)
+    );
+
+    if (imm & 0x1000) {                // bit 12
+        imm |= static_cast<int32_t>(0xFFFFE000);
+    }
+
+    i.imm = imm;
+    i.type = InstructionType::B_TYPE;
+
+    return i;
+}
