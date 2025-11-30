@@ -10,6 +10,7 @@ public:
     Instruction decodeI(uint32_t instrWord);
     Instruction decodeS(uint32_t instrWord);
     Instruction decodeB(uint32_t instrWord);
+    Instruction decodeU(uint32_t instrWord);
 };
 
 #endif

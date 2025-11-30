@@ -60,6 +60,10 @@ void CPU::execute(const Instruction& instr) {
             Executor::executeBType(instr, *this);
             break;
 
+        case InstructionType::U_TYPE:
+            Executor::executeUType(instr, *this);
+            break;
+
         default:
             std::cout << "[ERRO] Tipo de instrução desconhecido.\n";
             break;

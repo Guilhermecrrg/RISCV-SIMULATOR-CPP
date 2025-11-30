@@ -81,3 +81,17 @@ Instruction Decoder::decodeB(uint32_t instrWord) {
 
     return i;
 }
+
+Instruction Decoder::decodeU(uint32_t instrWord) {
+    Instruction i;
+
+    i.opcode = instrWord & 0x7F;               // bits 0-6
+    i.rd     = (instrWord >> 7) & 0x1F;        // bits 7-11
+
+    int32_t imm20 = static_cast<int32_t>(instrWord & 0xFFFFF000);
+    
+    i.imm = imm20;
+    i.type = InstructionType::U_TYPE;
+    return i;
+}
+

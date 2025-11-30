@@ -154,3 +154,23 @@ void Executor::executeBType(const Instruction& instr, CPU& cpu) {
     }
 }
 
+void Executor::executeUType(const Instruction& instr, CPU& cpu) {
+    uint32_t imm = static_cast<uint32_t>(instr.imm);
+
+    switch (instr.opcode) {
+
+        case 0b0110111:  // LUI
+            cpu.writeReg(instr.rd, imm);
+            break;
+
+        case 0b0010111:  // AUIPC
+            cpu.writeReg(instr.rd, cpu.getPC() + imm);
+            break;
+
+        default:
+            std::cout << "[ERRO] Opcode desconhecido no U-Type!\n";
+            break;
+    }
+}
+
+
