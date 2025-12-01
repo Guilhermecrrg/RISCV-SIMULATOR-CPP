@@ -11,6 +11,9 @@ public:
     static int32_t addSigned(int32_t a, int32_t b);
     static int32_t subSigned(int32_t a, int32_t b);
     static uint32_t sltSigned(int32_t a, int32_t b);
+    static uint32_t sllOp(uint32_t a, uint32_t shamt);
+    static uint32_t srlOp(uint32_t a, uint32_t shamt);
+    static uint32_t sraOp(int32_t a, uint32_t shamt);
 };
 
 #endif

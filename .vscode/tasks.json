@@ -18,6 +18,10 @@
         "${workspaceFolder}/simulator/src/Executor.cpp",
         "${workspaceFolder}/simulator/src/ALU.cpp",
         "${workspaceFolder}/simulator/src/Memory.cpp",
+        "${workspaceFolder}/simulator/src/RAMDevice.cpp",
+        "${workspaceFolder}/simulator/src/ROMDevice.cpp",
+        "${workspaceFolder}/simulator/src/UARTDevice.cpp",
+        "${workspaceFolder}/simulator/src/Bus.cpp",
         
         "-o",
         "${workspaceFolder}/simulator/build/Debug/outDebug.exe"

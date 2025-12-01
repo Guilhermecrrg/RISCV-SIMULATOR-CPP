@@ -18,6 +18,17 @@ void Executor::executeRType(const Instruction& instr, CPU& cpu) {
                 result = static_cast<uint32_t>(ALU::addSigned(rs1, rs2));
             break;
 
+        case 0b001: // SLL
+            result = ALU::sllOp(static_cast<uint32_t>(rs1), static_cast<uint32_t>(rs2) & 0x1F);
+            break;
+
+        case 0b101: // SRL / SRA
+            if (instr.funct7 == 0b0100000) // SRA
+                result = ALU::sraOp(rs1, static_cast<uint32_t>(rs2) & 0x1F);
+            else                           // SRL
+                result = ALU::srlOp(static_cast<uint32_t>(rs1), static_cast<uint32_t>(rs2) & 0x1F);
+            break;
+
         case 0b111: // AND
             result = ALU::andOp(static_cast<uint32_t>(rs1), static_cast<uint32_t>(rs2));
             break;
@@ -35,7 +46,7 @@ void Executor::executeRType(const Instruction& instr, CPU& cpu) {
             break;
 
         default:
-            std::cout << "[ERRO] funct3 desconhecido no R-Type!\n";
+            std::cout << "[ERRO] funct3 desconhecido no R-Type.\n";
             return;
     }
 
@@ -44,40 +55,125 @@ void Executor::executeRType(const Instruction& instr, CPU& cpu) {
 
 
 void Executor::executeIType(const Instruction& instr, CPU& cpu) {
-    int32_t rs1 = static_cast<int32_t>(cpu.readReg(instr.rs1));
-    int32_t imm = instr.imm;  
+    int32_t imm = instr.imm;
+    uint32_t rs1_u = cpu.readReg(instr.rs1);
+    int32_t rs1_s = static_cast<int32_t>(rs1_u);
 
     uint32_t result = 0;
 
-    switch (instr.funct3) {
+    switch (instr.opcode) {
 
-        case 0b000: // ADDI
-            result = static_cast<uint32_t>(ALU::addSigned(rs1, imm));
-            break;
+        // ----------------------------------------------------
+        // I-type aritmético 
+        // ----------------------------------------------------
+        case 0b0010011: {
+            switch (instr.funct3) {
+                case 0b000: // ADDI
+                    result = static_cast<uint32_t>(ALU::addSigned(rs1_s, imm));
+                    break;
 
-        case 0b100: // XORI
-            result = ALU::xorOp(static_cast<uint32_t>(rs1), static_cast<uint32_t>(imm));
-            break;
+                case 0b001: // SLLI
+                    result = ALU::sllOp(static_cast<uint32_t>(rs1_s), imm & 0x1F);
+                    break;
 
-        case 0b110: // ORI
-            result = ALU::orOp(static_cast<uint32_t>(rs1), static_cast<uint32_t>(imm));
-            break;
+                case 0b101: // SRLI / SRAI
+                    if ((imm >> 10) & 0x1)// SRAI
+                        result = ALU::sraOp(rs1_s, imm & 0x1F);
+                    else                         // SRLI
+                        result = ALU::srlOp(static_cast<uint32_t>(rs1_s), imm & 0x1F);
+                    break;
 
-        case 0b111: // ANDI
-            result = ALU::andOp(static_cast<uint32_t>(rs1), static_cast<uint32_t>(imm));
-            break;
+                case 0b100: // XORI
+                    result = ALU::xorOp(static_cast<uint32_t>(rs1_s), static_cast<uint32_t>(imm));
+                    break;
 
-        case 0b010: // SLTI signed
-            result = ALU::sltSigned(rs1, imm);
+                case 0b110: // ORI
+                    result = ALU::orOp(static_cast<uint32_t>(rs1_s), static_cast<uint32_t>(imm));
+                    break;
+
+                case 0b111: // ANDI
+                    result = ALU::andOp(static_cast<uint32_t>(rs1_s), static_cast<uint32_t>(imm));
+                    break;
+
+                case 0b010: // SLTI (signed)
+                    result = ALU::sltSigned(rs1_s, imm);
+                    break;
+
+                default:
+                    std::cout << "[ERRO] funct3 desconhecido no I-Type aritmético.\n";
+                    return;
+            }
+
+            cpu.writeReg(instr.rd, result);
             break;
+        }
+
+        // ----------------------------------------------------
+        // LOADS 
+        // ----------------------------------------------------
+        case 0b0000011: {
+            int64_t addr64 = static_cast<int64_t>(rs1_u) + static_cast<int64_t>(imm);
+            uint32_t addr = static_cast<uint32_t>(addr64);
+
+            switch (instr.funct3) {
+                case 0b000: { // LB 
+                    uint8_t b = cpu.loadByte(addr);
+                    int32_t val = static_cast<int32_t>(static_cast<int8_t>(b)); 
+                    cpu.writeReg(instr.rd, static_cast<uint32_t>(val));
+                    break;
+                }
+
+                case 0b001: { // LH 
+                    uint16_t h = cpu.loadHalf(addr);
+                    int32_t val = static_cast<int32_t>(static_cast<int16_t>(h));
+                    cpu.writeReg(instr.rd, static_cast<uint32_t>(val));
+                    break;
+                }
+
+                case 0b010: { // LW 
+                    uint32_t w = cpu.loadWord(addr);
+                    cpu.writeReg(instr.rd, w);
+                    break;
+                }
+
+                case 0b100: { // LBU 
+                    uint8_t b = cpu.loadByte(addr);
+                    cpu.writeReg(instr.rd, static_cast<uint32_t>(b));
+                    break;
+                }
+
+                case 0b101: { // LHU 
+                    uint16_t h = cpu.loadHalf(addr);
+                    cpu.writeReg(instr.rd, static_cast<uint32_t>(h));
+                    break;
+                }
+
+                default:
+                    std::cout << "[ERRO] funct3 desconhecido no LOAD I-Type.\n";
+                    return;
+            }
+            break;
+        }
+
+        // ----------------------------------------------------
+        // JALR 
+        // ----------------------------------------------------
+        case 0b1100111: {
+            uint32_t pc = cpu.getPC();
+            cpu.writeReg(instr.rd, pc + 4);
+
+            int64_t target64 = static_cast<int64_t>(rs1_u) + static_cast<int64_t>(imm);
+            uint32_t target = static_cast<uint32_t>(target64) & ~static_cast<uint32_t>(1);
+            cpu.setPC(target);
+            break;
+        }
 
         default:
-            std::cout << "[ERRO] funct3 desconhecido no I-Type!\n";
+            std::cout << "[ERRO] Opcode I-Type desconhecido.\n";
             return;
     }
-
-    cpu.writeReg(instr.rd, result);
 }
+
 
 void Executor::executeSType(const Instruction& instr, CPU& cpu) {
     uint32_t base = cpu.readReg(instr.rs1);  
@@ -101,7 +197,7 @@ void Executor::executeSType(const Instruction& instr, CPU& cpu) {
             break;
 
         default:
-            std::cout << "[ERRO] funct3 desconhecido no S-Type!\n";
+            std::cout << "[ERRO] funct3 desconhecido no S-Type.\n";
             return;
     }
 }
@@ -168,7 +264,7 @@ void Executor::executeUType(const Instruction& instr, CPU& cpu) {
             break;
 
         default:
-            std::cout << "[ERRO] Opcode desconhecido no U-Type!\n";
+            std::cout << "[ERRO] Opcode desconhecido no U-Type.\n";
             break;
     }
 }

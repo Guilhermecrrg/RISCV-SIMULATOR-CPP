@@ -1,9 +1,24 @@
 #include "../include/CPU.hpp"
 #include "../include/Executor.hpp"
+#include "../include/RAMDevice.hpp"
+#include "../include/ROMDevice.hpp"
+#include "../include/UARTDevice.hpp"
+#include <memory>
+#include <vector>
+#include <iostream>
 
 CPU::CPU(size_t memorySize)
-    : mem(memorySize), pc(0)
+    : regs(), bus(), pc(0)
 {
+    auto ram = std::make_shared<RAMDevice>(memorySize);
+    bus.addDevice(0x00000000u, static_cast<uint32_t>(memorySize), ram);
+
+    std::vector<uint8_t> romData = {}; 
+    auto rom = std::make_shared<ROMDevice>(romData);
+    bus.addDevice(0x00001000u, 0x1000u, rom);
+    
+    auto uart = std::make_shared<UARTDevice>();
+    bus.addDevice(0x10000000u, 0x100u, uart);
 }
 
 void CPU::writeReg(size_t index, uint32_t value) {
@@ -19,31 +34,33 @@ void CPU::dump() const {
 }
 
 uint8_t CPU::loadByte(uint32_t addr) const {
-    return mem.readByte(addr);
+    return bus.readByte(addr);
 }
 
 uint16_t CPU::loadHalf(uint32_t addr) const {
-    return mem.readHalf(addr);
+    return bus.readHalf(addr);
 }
 
 uint32_t CPU::loadWord(uint32_t addr) const {
-    return mem.readWord(addr);
+    return bus.readWord(addr);
 }
 
 void CPU::storeByte(uint32_t addr, uint8_t value) {
-    mem.writeByte(addr, value);
+    bus.writeByte(addr, value);
 }
 
 void CPU::storeHalf(uint32_t addr, uint16_t value) {
-    mem.writeHalf(addr, value);
+    bus.writeHalf(addr, value);
 }
 
 void CPU::storeWord(uint32_t addr, uint32_t value) {
-    mem.writeWord(addr, value);
+    bus.writeWord(addr, value);
 }
 
 void CPU::execute(const Instruction& instr) {
+
     switch (instr.type) {
+
         case InstructionType::R_TYPE:
             Executor::executeRType(instr, *this);
             break;
