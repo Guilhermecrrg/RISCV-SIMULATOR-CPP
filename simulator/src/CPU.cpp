@@ -4,6 +4,7 @@
 #include "../include/ROMDevice.hpp"
 #include "../include/UARTDevice.hpp"
 #include "../include/MemoryMap.hpp"
+#include "../include/Cache.hpp"
 #include <memory>
 #include <vector>
 #include <iostream>
@@ -48,8 +49,14 @@ namespace {
 }
 
 CPU::CPU(size_t memorySize)
-    : regs(), bus(), pc(0)
+    : regs(), bus(), pc(0), cache(&bus)
+
 {
+    const size_t minSize = static_cast<size_t>(ADDRESS_SPACE_SZ);
+    if (memorySize < minSize) {
+        memorySize = minSize;
+    }
+
     auto ram = std::make_shared<RAMDevice>(memorySize);
     bus.addDevice(0x00000000u, static_cast<uint32_t>(memorySize), ram);
 
@@ -60,7 +67,7 @@ CPU::CPU(size_t memorySize)
     auto uart = std::make_shared<UARTDevice>();
     bus.addDevice(0x10000000u, 0x100u, uart);
 }
-
+// Registradores
 void CPU::writeReg(size_t index, uint32_t value) {
     regs.write(index, value);
 }
@@ -74,27 +81,27 @@ void CPU::dump() const {
 }
 
 uint8_t CPU::loadByte(uint32_t addr) const {
-    return bus.readByte(addr);
+    return cache.readByte(addr);
 }
 
 uint16_t CPU::loadHalf(uint32_t addr) const {
-    return bus.readHalf(addr);
+    return cache.readHalf(addr);
 }
 
 uint32_t CPU::loadWord(uint32_t addr) const {
-    return bus.readWord(addr);
+    return cache.readWord(addr);
 }
 
 void CPU::storeByte(uint32_t addr, uint8_t value) {
-    bus.writeByte(addr, value);
+    cache.writeByte(addr, value);
 }
 
 void CPU::storeHalf(uint32_t addr, uint16_t value) {
-    bus.writeHalf(addr, value);
+    cache.writeHalf(addr, value);
 }
 
 void CPU::storeWord(uint32_t addr, uint32_t value) {
-    bus.writeWord(addr, value);
+    cache.writeWord(addr, value);
 }
 
 void CPU::execute(const Instruction& instr) {

@@ -5,14 +5,17 @@
 #include "Instruction.hpp"
 #include "Bus.hpp"
 #include "MemoryMap.hpp"
+#include "Cache.hpp"
 #include <cstdint>
 #include <cstddef>
 
-class CPU {
+class CPU {  
 private:
     Register regs;
     Bus bus;
     uint32_t pc;
+
+    mutable Cache cache;
 
 public:
     // Constructor

@@ -22,6 +22,7 @@
         "${workspaceFolder}/simulator/src/ROMDevice.cpp",
         "${workspaceFolder}/simulator/src/UARTDevice.cpp",
         "${workspaceFolder}/simulator/src/Bus.cpp",
+        "${workspaceFolder}/simulator/src/Cache.cpp",
         
         "-o",
         "${workspaceFolder}/simulator/build/Debug/outDebug.exe"

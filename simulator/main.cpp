@@ -93,8 +93,7 @@ uint32_t encodeJ(int32_t imm, uint32_t rd, uint32_t opcode) {
 
 
 int main() {
-    // CPU com memória interna (ex: 1 KB = 1024 bytes)
-    CPU cpu(1024);
+    CPU cpu(MemMap::ADDRESS_SPACE_SZ);
     Decoder decoder;
 
     // -------------------------------------------------------
