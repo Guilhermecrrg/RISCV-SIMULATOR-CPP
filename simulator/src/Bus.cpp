@@ -48,7 +48,7 @@ void Bus::writeWord(uint32_t addr, uint32_t value) {
 
 uint8_t Bus::readByte(uint32_t addr) const {
     auto d = findDevice(addr);
-    if (!d) throw std::out_of_range("Bus readByte: address unmapped");
+    if (!d) throw std::out_of_range("Bus readByte: address unmapped"); //ajustar a memoria depois, está menor para testes, por isso ta crashando
     for (const auto &r : regions) {
         if (addr >= r.base && addr < r.base + r.size) {
             return d->readByte(addr - r.base);

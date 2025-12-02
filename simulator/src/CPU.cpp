@@ -3,9 +3,49 @@
 #include "../include/RAMDevice.hpp"
 #include "../include/ROMDevice.hpp"
 #include "../include/UARTDevice.hpp"
+#include "../include/MemoryMap.hpp"
 #include <memory>
 #include <vector>
 #include <iostream>
+
+using namespace MemMap;
+
+namespace {
+
+    constexpr std::uint64_t VRAM_DUMP_INTERVAL = 16;
+
+    std::uint64_t g_instrCount = 0;
+
+    void dumpVRAMToTerminal(const CPU& cpu)
+    {
+        std::cout << "\n[VRAM - dump apos " << g_instrCount
+                  << " instrucoes]\n";
+
+        std::uint32_t col = 0;
+
+        for (std::uint32_t addr = VRAM_START; addr <= VRAM_END; ++addr) {
+            std::uint8_t value = cpu.loadByte(addr);
+
+            char c = (value >= 32 && value <= 126)
+                     ? static_cast<char>(value)
+                     : '.';
+
+            std::cout << c;
+            ++col;
+
+            if (col == VRAM_COLS) {
+                std::cout << '\n';
+                col = 0;
+            }
+        }
+
+        if (col != 0) {
+            std::cout << '\n';
+        }
+
+        std::cout << "[fim VRAM]\n";
+    }
+}
 
 CPU::CPU(size_t memorySize)
     : regs(), bus(), pc(0)
@@ -88,5 +128,11 @@ void CPU::execute(const Instruction& instr) {
         default:
             std::cout << "[ERRO] Tipo de instrucao desconhecido.\n";
             break;
+    }
+
+    ++g_instrCount;
+
+    if (g_instrCount % VRAM_DUMP_INTERVAL == 0) {
+        dumpVRAMToTerminal(*this);
     }
 }

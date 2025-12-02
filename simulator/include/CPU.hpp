@@ -4,6 +4,7 @@
 #include "Register.hpp"
 #include "Instruction.hpp"
 #include "Bus.hpp"
+#include "MemoryMap.hpp"
 #include <cstdint>
 #include <cstddef>
 
