@@ -1,8 +1,9 @@
 #include <iostream>
 #include <cstdint>
 
-#include "include/CPU.hpp"
 #include "include/Decoder.hpp"
+#include "include/CPU.hpp"
+#include "include/InteractiveConsole.hpp"
 
 // -------------------------------------------------------
 // ENCODE R-TYPE
@@ -105,6 +106,7 @@ int main() {
     // =======================================================
     // TESTES R-TYPE
     // =======================================================
+
     std::cout << "\n===== TESTES R-TYPE =====\n";
 
     // ADD x3 = x1 + x2 = 10 + 5 = 15
@@ -220,6 +222,9 @@ int main() {
         0b000,    // funct3 (BEQ)
         0b1100011 // opcode
     );
+
+    InteractiveConsole ui(cpu);
+    ui.run();  // loop interativo
 
     cpu.execute(decoder.decode(beqInstr));
     std::cout << "BEQ  (esperado PC=8)   PC=" << cpu.getPC() << "\n";

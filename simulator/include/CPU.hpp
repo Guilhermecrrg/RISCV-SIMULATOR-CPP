@@ -9,7 +9,11 @@
 #include <cstdint>
 #include <cstddef>
 
-class CPU {  
+class InteractiveConsole;
+
+class CPU { 
+    friend class InteractiveConsole;   // pra poder acessar regs, pc, bus, etc.
+
 private:
     Register regs;
     Bus bus;

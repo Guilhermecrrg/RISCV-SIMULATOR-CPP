@@ -10,6 +10,8 @@
         "-Wcast-align", "-Wconversion", "-Wsign-conversion",
         "-Wnull-dereference", "-g3", "-O0",
 
+        "-Isimulator/include",
+        
         // compilar todos os .cpp
         "${workspaceFolder}/simulator/main.cpp",
         "${workspaceFolder}/simulator/src/CPU.cpp",
@@ -23,6 +25,7 @@
         "${workspaceFolder}/simulator/src/UARTDevice.cpp",
         "${workspaceFolder}/simulator/src/Bus.cpp",
         "${workspaceFolder}/simulator/src/Cache.cpp",
+        "${workspaceFolder}/simulator/src/InteractiveConsole.cpp",
         
         "-o",
         "${workspaceFolder}/simulator/build/Debug/outDebug.exe"

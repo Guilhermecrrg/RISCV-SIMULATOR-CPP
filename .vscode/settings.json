@@ -60,6 +60,7 @@
     "iostream": "cpp",
     "memory": "cpp",
     "random": "cpp",
-    "optional": "cpp"
+    "optional": "cpp",
+    "cstdint": "cpp"
   }
 }
