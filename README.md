@@ -280,3 +280,5 @@ Converta as instruções para bytes em formato little-endian.
 Atualize o vetor de inicialização da ROM com a nova sequência de bytes.
 
 Recompile o simulador e execute novamente.
+
+# [Video de apresentação do código](https://youtu.be/Zfb1D6AIhG0).
