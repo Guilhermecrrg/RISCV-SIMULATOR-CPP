@@ -89,58 +89,54 @@ CPU::CPU(size_t memorySize)
     bus.addDevice(0x10000000u, 0x100u, uart);
 }
 
-bool CPU::loadProgram(const std::string& filename, uint32_t entryPoint) {
+bool CPU::loadProgram(const std::string& filename, uint32_t entryPoint)
+{
     std::ifstream file(filename);
     if (!file.is_open()) {
-        std::cerr << "[ERRO] Nao foi possivel abrir o arquivo: " << filename << "\n";
+        std::cerr << "[ERRO] Não foi possível abrir o arquivo: " << filename << "\n";
         return false;
     }
 
-    std::vector<uint8_t> programData;
-    programData.reserve(4096);
+    std::vector<uint8_t> romData(8 * 1024 * 1024, 0); // 8 MB
+    uint32_t currentAddr = 0;
 
     std::string line;
 
     while (std::getline(file, line)) {
-        // Remove espaços e caracteres indesejados
-        line.erase(std::remove_if(line.begin(), line.end(),
-                                  [](unsigned char c) { return std::isspace(c); }),
-                   line.end());
+        if (line.empty())
+            continue;
 
-        if (line.empty()) continue;
-
-        // A linha deve ter quantidade par de chars
-        if (line.size() % 2 != 0) {
-            std::cerr << "[ERRO] Linha com quantidade invalida de caracteres HEX.\n";
-            return false;
+        // detecta @endereçoxxx:
+        if (line[0] == '@') {
+            currentAddr = std::stoul(line.substr(1), nullptr, 16);
+            continue;
         }
 
-        // Converte 2 caracteres em 1 byte
-        for (size_t i = 0; i < line.size(); i += 2) {
-            std::string byteStr = line.substr(i, 2);
-            uint8_t value = static_cast<uint8_t>(std::stoul(byteStr, nullptr, 16));
-            programData.push_back(value);
+        // linha com palavra de 32 bits
+        if (line.size() >= 8) {
+            uint32_t word = std::stoul(line.substr(0, 8), nullptr, 16);
+
+            // little endian
+            romData[currentAddr + 0] = (word >> 0) & 0xFF;
+            romData[currentAddr + 1] = (word >> 8) & 0xFF;
+            romData[currentAddr + 2] = (word >> 16) & 0xFF;
+            romData[currentAddr + 3] = (word >> 24) & 0xFF;
+
+            currentAddr += 4;
         }
     }
 
-    // Criar ROM com estes bytes
-    auto rom = std::make_shared<ROMDevice>(programData);
+    auto rom = std::make_shared<ROMDevice>(romData);
 
-    const uint32_t ROM_BASE_ADDR = 0x80000000u;
-    const uint32_t ROM_SIZE = static_cast<uint32_t>(programData.size());
-
-    bus.addDevice(ROM_BASE_ADDR, ROM_SIZE, rom);
+    const uint32_t ROM_BASE_ADDR = 0x00000000;  
+    bus.addDevice(ROM_BASE_ADDR, romData.size(), rom);
 
     pc = entryPoint;
 
-    std::cout << "[INFO] Programa HEX '" << filename << "' carregado ("
-              << std::dec << ROM_SIZE << " bytes) em 0x"
-              << std::hex << ROM_BASE_ADDR
-              << ". PC inicializado em 0x" << entryPoint
-              << std::dec << ".\n";
-
+    std::cout << "[INFO] Arquivo HEX carregado com sucesso.\n";
     return true;
 }
+
 
 
 // Registradores

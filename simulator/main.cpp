@@ -22,7 +22,7 @@ int main() {
     // --- Configuração do Programa ---
     const std::string BINARY_FILE = "rv32ui-p-addi.hex"; 
     // O endereço de entrada deve corresponder ao endereço de mapeamento da ROM (0x1000u)
-    const uint32_t ENTRY_POINT = 0x80000000u;
+    const uint32_t ENTRY_POINT = 0x00000000;
 
     // 3. Carrega o programa binário para a memória ROM e configura o PC
     if (cpu.loadProgram(BINARY_FILE, ENTRY_POINT)) {
