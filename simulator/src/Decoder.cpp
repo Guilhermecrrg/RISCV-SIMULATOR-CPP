@@ -13,7 +13,9 @@ Instruction Decoder::decode(uint32_t instrWord) {
         // I-TYPE
         case 0b0010011: 
         case 0b0000011: 
-        case 0b1100111: 
+        case 0b1100111:
+        case 0b0001111:
+        case 0b1110011: 
             return decodeI(instrWord);
 
         // S-TYPE

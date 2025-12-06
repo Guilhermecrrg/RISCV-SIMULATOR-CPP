@@ -6,17 +6,20 @@
 #include "Bus.hpp"
 #include "MemoryMap.hpp"
 #include "Cache.hpp"
+#include "Decoder.hpp"
+
 #include <cstdint>
 #include <cstddef>
 
 class InteractiveConsole;
 
 class CPU { 
-    friend class InteractiveConsole;   // pra poder acessar regs, pc, bus, etc.
+    friend class InteractiveConsole; 
 
 private:
     Register regs;
     Bus bus;
+    Decoder decoder;
     uint32_t pc;
 
     mutable Cache cache;
@@ -24,6 +27,7 @@ private:
 public:
     // Constructor
     CPU(size_t memorySize);
+    bool loadProgram(const std::string& filename, uint32_t entryPoint);
 
     // Register
     void writeReg(size_t index, uint32_t value);
@@ -45,7 +49,10 @@ public:
     void advancePC() { pc += 4; }
 
     // Execute
+    uint32_t fetch() const;
     void execute(const Instruction& instr);
+    void run();
+    
 };
 
 #endif

@@ -45,6 +45,10 @@ void Executor::executeRType(const Instruction& instr, CPU& cpu) {
             result = ALU::sltSigned(rs1, rs2);
             break;
 
+        case 0b011: // SLTU - unsigned
+            result = (static_cast<uint32_t>(rs1) < static_cast<uint32_t>(rs2)) ? 1u : 0u;
+            break;
+
         default:
             std::cout << "[ERRO] funct3 desconhecido no R-Type.\n";
             return;
@@ -97,6 +101,10 @@ void Executor::executeIType(const Instruction& instr, CPU& cpu) {
 
                 case 0b010: // SLTI (signed)
                     result = ALU::sltSigned(rs1_s, imm);
+                    break;
+
+                case 0b011: // SLTIU
+                    result = (static_cast<uint32_t>(rs1_s) < static_cast<uint32_t>(imm)) ? 1u : 0u;
                     break;
 
                 default:
@@ -165,6 +173,24 @@ void Executor::executeIType(const Instruction& instr, CPU& cpu) {
             int64_t target64 = static_cast<int64_t>(rs1_u) + static_cast<int64_t>(imm);
             uint32_t target = static_cast<uint32_t>(target64) & ~static_cast<uint32_t>(1);
             cpu.setPC(target);
+            break;
+        }
+
+        // -----------------------------------------
+        // FENCE / FENCE.I  (NOP)
+        // -----------------------------------------
+        case 0b0001111:
+            break;
+
+        // -----------------------------------------
+        // ECALL / EBREAK
+        // -----------------------------------------
+        case 0b1110011: {
+            if (instr.imm == 0) {
+                std::cout << "[ECALL] chamada ignorada.\n";
+            } else if (instr.imm == 1) {
+                std::cout << "[EBREAK] break ignorado.\n";
+            }
             break;
         }
 
