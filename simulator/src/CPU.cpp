@@ -25,7 +25,6 @@ namespace {
     {
         bool hasContent = false;
 
-        // 1. Primeira varredura: verificar se existe algum byte != 0x00
         for (std::uint32_t addr = VRAM_START; addr <= VRAM_END; ++addr) {
             if (cpu.loadByte(addr) != 0x00) {
                 hasContent = true;
@@ -33,12 +32,10 @@ namespace {
             }
         }
 
-        // Se está tudo vazio, não imprime nada
         if (!hasContent) {
             return;
         }
 
-        // 2. Agora imprime porque sabemos que há conteúdo
         std::cout << "\n[VRAM - dump após " << g_instrCount
                 << " instruções]\n";
 
@@ -97,7 +94,7 @@ bool CPU::loadProgram(const std::string& filename, uint32_t entryPoint)
         return false;
     }
 
-    std::vector<uint8_t> romData(8 * 1024 * 1024, 0); // 8 MB
+    std::vector<uint8_t> romData(8 * 1024 * 1024, 0);
     uint32_t currentAddr = 0;
 
     std::string line;
@@ -106,21 +103,19 @@ bool CPU::loadProgram(const std::string& filename, uint32_t entryPoint)
         if (line.empty())
             continue;
 
-        // detecta @endereçoxxx:
+
         if (line[0] == '@') {
             currentAddr = std::stoul(line.substr(1), nullptr, 16);
             continue;
         }
 
-        // linha com palavra de 32 bits
         if (line.size() >= 8) {
             uint32_t word = std::stoul(line.substr(0, 8), nullptr, 16);
 
-            // little endian
-            romData[currentAddr + 0] = (word >> 0) & 0xFF;
-            romData[currentAddr + 1] = (word >> 8) & 0xFF;
-            romData[currentAddr + 2] = (word >> 16) & 0xFF;
-            romData[currentAddr + 3] = (word >> 24) & 0xFF;
+            romData[currentAddr + 3] = static_cast<uint8_t>((word >> 24) & 0xFF);
+            romData[currentAddr + 2] = static_cast<uint8_t>((word >> 16) & 0xFF);
+            romData[currentAddr + 1] = static_cast<uint8_t>((word >> 8) & 0xFF);
+            romData[currentAddr + 0] = static_cast<uint8_t>(word & 0xFF);
 
             currentAddr += 4;
         }
@@ -129,7 +124,7 @@ bool CPU::loadProgram(const std::string& filename, uint32_t entryPoint)
     auto rom = std::make_shared<ROMDevice>(romData);
 
     const uint32_t ROM_BASE_ADDR = 0x00000000;  
-    bus.addDevice(ROM_BASE_ADDR, romData.size(), rom);
+    bus.addDevice(ROM_BASE_ADDR, static_cast<uint32_t>(romData.size()), rom);
 
     pc = entryPoint;
 
