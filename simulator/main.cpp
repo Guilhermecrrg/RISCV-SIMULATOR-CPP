@@ -223,9 +223,6 @@ int main() {
         0b1100011 // opcode
     );
 
-    InteractiveConsole ui(cpu);
-    ui.run();  // loop interativo
-
     cpu.execute(decoder.decode(beqInstr));
     std::cout << "BEQ  (esperado PC=8)   PC=" << cpu.getPC() << "\n";
 
@@ -309,6 +306,9 @@ int main() {
 
     uint32_t invalidInstr = 0xFFFFFFFF;   
     cpu.execute(decoder.decode(invalidInstr));
+
+    InteractiveConsole ui(cpu);
+    ui.run();  // loop interativo
 
     std::cin.get();
     return 0;
