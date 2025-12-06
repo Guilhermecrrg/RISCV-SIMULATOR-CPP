@@ -1,0 +1,39 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "g++",
+      "args": [
+        "-Wall", "-Wextra", "-Wpedantic", "-Wshadow", "-Wformat=2",
+        "-Wcast-align", "-Wconversion", "-Wsign-conversion",
+        "-Wnull-dereference", "-g3", "-O0",
+
+        "-Isimulator/include",
+        
+        // compilar todos os .cpp
+        "${workspaceFolder}/simulator/main.cpp",
+        "${workspaceFolder}/simulator/src/CPU.cpp",
+        "${workspaceFolder}/simulator/src/Decoder.cpp",
+        "${workspaceFolder}/simulator/src/Register.cpp",
+        "${workspaceFolder}/simulator/src/Executor.cpp",
+        "${workspaceFolder}/simulator/src/ALU.cpp",
+        "${workspaceFolder}/simulator/src/Memory.cpp",
+        "${workspaceFolder}/simulator/src/RAMDevice.cpp",
+        "${workspaceFolder}/simulator/src/ROMDevice.cpp",
+        "${workspaceFolder}/simulator/src/UARTDevice.cpp",
+        "${workspaceFolder}/simulator/src/Bus.cpp",
+        "${workspaceFolder}/simulator/src/Cache.cpp",
+        "${workspaceFolder}/simulator/src/InteractiveConsole.cpp",
+        
+        "-o",
+        "${workspaceFolder}/simulator/build/Debug/outDebug.exe"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
